@@ -16,81 +16,9 @@ PIECE_VALUES = {
 	chess.QUEEN: 929,
 	chess.KING: 60000 
 }
-SQUARE_VALUES = {
-	0: 			 			[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.PAWN: [
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.KNIGHT:[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.BISHOP:[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.ROOK: 	[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.QUEEN: [
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.KING: 	[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-}
 
 
-'''
+
 SQUARE_VALUES = {
 	0: 			 			[
 					[ 0, 0, 0, 0, 0, 0, 0, 0],
@@ -163,7 +91,7 @@ SQUARE_VALUES = {
 			        [    17,  30,  -3, -14,   6,  -1,  40,  18]
 				],
 }
-'''
+
 
 SQUARES = np.array([
 	[chess.A1,chess.B1,chess.C1,chess.D1,chess.E1,chess.F1,chess.G1,chess.H1],
@@ -262,11 +190,11 @@ class TranspositionTable:
 class MoveTree:
 	def __init__(self):
 		self.board = chess.Board()
-		self.MAX_SEARCH_DEPTH = 8
+		self.MAX_SEARCH_DEPTH = 6
 		self.engineColor = chess.BLACK
 		self.table = TranspositionTable()
-		self.OpeningBookCreator = OpeningBookCreator.OpeningBookCreator("./env/Lib/site-packages/chess/data/polyglot/SmileyInitOpen.bin")
-		self.OpeningBook = chess.polyglot.open_reader("./env/Lib/site-packages/chess/data/polyglot/performance.bin")
+		self.OpeningBookCreator = OpeningBookCreator.OpeningBookCreator("../env/Lib/site-packages/chess/data/polyglot/SmileyInitOpen.bin")
+		self.OpeningBook = chess.polyglot.open_reader("../env/Lib/site-packages/chess/data/polyglot/performance.bin")
 		self.Killers = []
 		self.Countermoves = np.zeros((64,64), dtype=np.dtype(chess.Move))
 
@@ -288,8 +216,10 @@ class MoveTree:
 		self.averageTransitionTablePrune = 0
 		self.openingBookHits = 0
 		self.killersFound = 0
+		self.timeForLibrary = 0
 
 	def setSearchStats(self):
+		self.timeForLibrary = 0
 		self.openingBookHits = 0
 		self.tableEXACT = 0
 		self.tableALPHA = 0
@@ -304,7 +234,7 @@ class MoveTree:
 
 	def printSearchStats(self):
 		totalTime = time.perf_counter() - self.searchStart
-		treeStatString = "Total Nodes Searched: {}\nTable Nodes Pruned: {}\nAverage Table Pruned Node Depth: {}\nEXACT: {}\nALPHA: {}\nBETA: {}\nMoves Reodered: {}\nTotal Search Nodes Pruned: {}\nAverage Search Node Pruned Depth: {}\nOpening Book Hits: {}\nKillers Found: {}\nTotal Time For Searches: {} \n".format(self.totalNodesSearched, self.transitionTablePruning, self.averageTransitionTablePrune,self.tableEXACT,self.tableALPHA,self.tableBETA, self.movesReordered, self.totalNodesPruned, self.averageDepthPruned,self.openingBookHits, self.killersFound, totalTime)
+		treeStatString = "Total Nodes Searched: {}\nTable Nodes Pruned: {}\nAverage Table Pruned Node Depth: {}\nEXACT: {}\nALPHA: {}\nBETA: {}\nMoves Reodered: {}\nTotal Search Nodes Pruned: {}\nAverage Search Node Pruned Depth: {}\nOpening Book Hits: {}\nKillers Found: {}\nTotal Time For Searches: {} \nLibrary Time: {}\n".format(self.totalNodesSearched, self.transitionTablePruning, self.averageTransitionTablePrune,self.tableEXACT,self.tableALPHA,self.tableBETA, self.movesReordered, self.totalNodesPruned, self.averageDepthPruned,self.openingBookHits, self.killersFound, totalTime, self.timeForLibrary)
 		tableStatString = self.table.getTableStatString()
 		print(tableStatString + treeStatString)
 		return
@@ -316,7 +246,9 @@ class MoveTree:
 		blackScore = 0
 		for i in range(8):
 			for j in range(8):
+				self.timeForLibrary -= time.perf_counter()
 				piece = self.board.piece_at(SQUARES[i][j])
+				self.timeForLibrary += time.perf_counter()
 				if piece and piece.color == chess.WHITE:
 					whiteScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][7-i][7-j]
 				elif piece:
@@ -330,7 +262,9 @@ class MoveTree:
 		'''
 	
 	def findBestMove(self):
+		#self.timeForLibrary -= time.perf_counter()
 		init_moves = self.board.legal_moves
+		#self.timeForLibrary += time.perf_counter()
 		bestMove = None
 		self.Killers = []
 		for i in range(self.MAX_SEARCH_DEPTH,self.MAX_SEARCH_DEPTH+1):
@@ -341,20 +275,6 @@ class MoveTree:
 			if entry:
 				bestMove = entry.move
 		print(entry.value)
-		'''
-		for i in range(0, self.MAX_SEARCH_DEPTH+1):
-			bestValue = 0
-			bestMove = None
-			for move in init_moves:
-				alpha = -np.inf
-				beta = np.inf
-				self.board.push(move)
-				currBoardValue = self.alphaBetaPrune(i, alpha, beta, False, self.engineColor)
-				self.board.pop()
-				if bestMove == None or currBoardValue > bestValue:
-					bestValue = currBoardValue
-					bestMove = move
-		'''
 		return bestMove
 
 	def takeTurn(self, move):
@@ -362,6 +282,7 @@ class MoveTree:
 			chessMove = chess.Move.from_uci(move)
 			if chessMove not in self.board.legal_moves:
 				raise AssertionError
+
 			self.board.push(chessMove)
 			return
 		elif isinstance(move, chess.Move):
@@ -393,19 +314,25 @@ class MoveTree:
 				self.turnColor = not self.turnColor
 			print("\n\n")
 	def openingBookLookup(self):
+		self.timeForLibrary -= time.perf_counter()
 		hashVal = chess.polyglot.zobrist_hash(self.board)
+		self.timeForLibrary += time.perf_counter()
 		return self.OpeningBook.get(hashVal)
 
 
 	def tableLookup(self):
+		self.timeForLibrary -= time.perf_counter()
 		hashVal = chess.polyglot.zobrist_hash(self.board)
+		self.timeForLibrary += time.perf_counter()
 		if self.table.isEntry(hashVal):
 			return self.table.getEntry(hashVal)
 		else:
 			return None
 
 	def addCurrentStateToTable(self, move, depth, value, flag):
+		self.timeForLibrary -= time.perf_counter()
 		hashVal = chess.polyglot.zobrist_hash(self.board)
+		self.timeForLibrary += time.perf_counter()
 		entry = TTEntry(hashVal, move, depth, value, flag)
 		self.table.addEntry(hashVal, entry)
 		return
@@ -465,7 +392,9 @@ class MoveTree:
 					self.killersFound += 1
 			
 			if self.isMoveCapture(move):
+				#self.timeForLibrary -= time.perf_counter()
 				ordering[-1] += PIECE_VALUES[self.board.piece_at(move.to_square).piece_type]/100
+				#self.timeForLibrary += time.perf_counter()
 			if self.Countermoves[move.from_square][move.to_square] == move:
 				ordering[-1] += 0
 
@@ -520,9 +449,13 @@ class MoveTree:
 
 
 			for move in potentialMoves:
+				#self.timeForLibrary -= time.perf_counter()
 				self.board.push(move)
+				#self.timeForLibrary += time.perf_counter()
 				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)
+				#self.timeForLibrary -= time.perf_counter()
 				self.board.pop()
+				#self.timeForLibrary += time.perf_counter()
 				if not bestValue or currBoardValue > bestValue:
 					bestValue = currBoardValue
 					bestMove = move
@@ -562,9 +495,13 @@ class MoveTree:
 
 
 			for move in potentialMoves:
-				self.board.push(move)   
+				#self.timeForLibrary -= time.perf_counter()
+				self.board.push(move) 
+				#self.timeForLibrary += time.perf_counter()  
 				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)
+				#self.timeForLibrary -= time.perf_counter()
 				self.board.pop()
+				#self.timeForLibrary += time.perf_counter()
 				if not bestValue or currBoardValue < bestValue:
 					bestValue = currBoardValue
 					bestMove = move

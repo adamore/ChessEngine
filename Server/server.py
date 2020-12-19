@@ -7,6 +7,8 @@ app = Flask(__name__)
 app = Api(app)
 
 app.add_resource(GameManager, "/make-white-move")
+app.add_resource(GameCreator, "/make-white-move")
+
 
 if __name__ == "__main__":
 	app.run()
