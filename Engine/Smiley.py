@@ -241,7 +241,7 @@ class MoveTree:
 			if piece and piece.color == chess.WHITE:
 				whiteScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][i]
 			elif piece:
-				blackScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][64-i]
+				blackScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][63-i]
 		return(blackScore - whiteScore) 
 	
 	def findBestMove(self):
