@@ -18,9 +18,6 @@ cors = CORS(app)
 api = Api(app)
 
 
-parser = reqparse.RequestParser()
-games = dict()
-
 
 
 

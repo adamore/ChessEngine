@@ -8,7 +8,7 @@ import chess.polyglot
 import pdb
 import time
 import OpeningBookCreator
-
+import random
 
 PIECE_VALUES = {
 	0: 0,
@@ -23,89 +23,75 @@ PIECE_VALUES = {
 
 
 SQUARE_VALUES = {
-	0: 			 			[
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0],
-					[ 0, 0, 0, 0, 0, 0, 0, 0]
-				],
-	chess.PAWN: [
-					[    0,   0,   0,   0,   0,   0,   0,   0],
-            		[	78,  83,  86,  73, 102,  82,  85,  90],
-			        [    7,  29,  21,  44,  40,  31,  44,   7],
-			        [  -17,  16,  -2,  15,  14,   0,  15, -13],
-			        [  -26,   3,  10,   9,   6,   1,   0, -23],
-			        [  -22,   9,   5, -11, -10,  -2,   3, -19],
-			        [  -31,   8,  -7, -37, -36, -14,   3, -31],
-			        [    0,   0,   0,   0,   0,   0,   0,   0]
-				],
-	chess.KNIGHT:[
-					[  -66, -53, -75, -75, -10, -55, -58, -70],
-			        [   -3,  -6, 100, -36,   4,  62,  -4, -14],
-			        [   10,  67,   1,  74,  73,  27,  62,  -2],
-			        [   24,  24,  45,  37,  33,  41,  25,  17],
-			        [   -1,   5,  31,  21,  22,  35,   2,   0],
-			        [  -18,  10,  13,  22,  18,  15,  11, -14],
-			        [  -23, -15,   2,   0,   2,   0, -23, -20],
-			        [  -74, -23, -26, -24, -19, -35, -22, -69]
-				],
-	chess.BISHOP:[
-					[	-59, -78, -82, -76, -23,-107, -37, -50],
-			        [   -11,  20,  35, -42, -39,  31,   2, -22],
-			        [    -9,  39, -32,  41,  52, -10,  28, -14],
-			        [    25,  17,  20,  34,  26,  25,  15,  10],
-			        [    13,  10,  17,  23,  17,  16,   0,   7],
-			        [    14,  25,  24,  15,   8,  25,  20,  15],
-			        [    19,  20,  11,   6,   7,   6,  20,  16],
-			        [    -7,   2, -15, -12, -14, -15, -10, -10]
-				],
-	chess.ROOK: 			[
-					[	 35,  29,  33,   4,  37,  33,  56,  50],
-			        [    55,  29,  56,  67,  55,  62,  34,  60],
-			        [    19,  35,  28,  33,  45,  27,  25,  15],
-			        [     0,   5,  16,  13,  18,  -4,  -9,  -6],
-			        [   -28, -35, -16, -21, -13, -29, -46, -30],
-			        [   -42, -28, -42, -25, -25, -35, -26, -46],
-			        [   -53, -38, -31, -26, -29, -43, -44, -53],
-			        [   -30, -24, -18,   5,  -2, -18, -31, -32]
-				],
-	chess.QUEEN: [
-					[	  6,   1,  -8,-104,  69,  24,  88,  26],
-			        [    14,  32,  60, -10,  20,  76,  57,  24],
-			        [    -2,  43,  32,  60,  72,  63,  43,   2],
-			        [     1, -16,  22,  17,  25,  20, -13,  -6],
-			        [   -14, -15,  -2,  -5,  -1, -10, -20, -22],
-			        [   -30,  -6, -13, -11, -16, -11, -16, -27],
-			        [   -36, -18,   0, -19, -15, -15, -21, -38],
-			        [   -39, -30, -31, -13, -31, -36, -34, -42]
-				],
-	chess.KING: 			[
-			 		[	  4,  54,  47, -99, -99,  60,  83, -62],
-			        [   -32,  10,  55,  56,  56,  55,  10,   3],
-			        [   -62,  12, -57,  44, -67,  28,  37, -31],
-			        [   -55,  50,  11,  -4, -19,  13,   0, -49],
-			        [   -55, -43, -52, -28, -51, -47,  -8, -50],
-			        [   -47, -42, -43, -79, -64, -32, -29, -32],
-			        [    -4,   3, -14, -50, -57, -18,  13,   4],
-			        [    17,  30,  -3, -14,   6,  -1,  40,  18]
-				],
+    '0': (   0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0,
+           	 0,   0,   0,   0,   0,   0,   0,   0,
+             0,   0,   0,   0,   0,   0,   0,   0),
+    chess.PAWN:  (   0,   0,   0,   0,   0,   0,   0,   0,
+		            78,  83,  86,  73, 102,  82,  85,  90,
+		             7,  29,  21,  44,  40,  31,  44,   7,
+		           -17,  16,  -2,  15,  14,   0,  15, -13,
+		           -26,   3,  10,   9,   6,   1,   0, -23,
+		           -22,   9,   5, -11, -10,  -2,   3, -19,
+		           -31,   8,  -7, -37, -36, -14,   3, -31,
+		             0,   0,   0,   0,   0,   0,   0,   0),
+	chess.KNIGHT:( -66, -53, -75, -75, -10, -55, -58, -70,
+		            -3,  -6, 100, -36,   4,  62,  -4, -14,
+		            10,  67,   1,  74,  73,  27,  62,  -2,
+		            24,  24,  45,  37,  33,  41,  25,  17,
+		            -1,   5,  31,  21,  22,  35,   2,   0,
+		           -18,  10,  13,  22,  18,  15,  11, -14,
+		           -23, -15,   2,   0,   2,   0, -23, -20,
+		           -74, -23, -26, -24, -19, -35, -22, -69),
+	chess.BISHOP:( -59, -78, -82, -76, -23,-107, -37, -50,
+		           -11,  20,  35, -42, -39,  31,   2, -22,
+		            -9,  39, -32,  41,  52, -10,  28, -14,
+		            25,  17,  20,  34,  26,  25,  15,  10,
+		            13,  10,  17,  23,  17,  16,   0,   7,
+		            14,  25,  24,  15,   8,  25,  20,  15,
+		            19,  20,  11,   6,   7,   6,  20,  16,
+		            -7,   2, -15, -12, -14, -15, -10, -10),
+	chess.ROOK  :(  35,  29,  33,   4,  37,  33,  56,  50,
+		            55,  29,  56,  67,  55,  62,  34,  60,
+		            19,  35,  28,  33,  45,  27,  25,  15,
+		             0,   5,  16,  13,  18,  -4,  -9,  -6,
+		           -28, -35, -16, -21, -13, -29, -46, -30,
+		           -42, -28, -42, -25, -25, -35, -26, -46,
+		           -53, -38, -31, -26, -29, -43, -44, -53,
+		           -30, -24, -18,   5,  -2, -18, -31, -32),
+    chess.QUEEN :(   6,   1,  -8,-104,  69,  24,  88,  26,
+		            14,  32,  60, -10,  20,  76,  57,  24,
+		            -2,  43,  32,  60,  72,  63,  43,   2,
+		             1, -16,  22,  17,  25,  20, -13,  -6,
+		           -14, -15,  -2,  -5,  -1, -10, -20, -22,
+		           -30,  -6, -13, -11, -16, -11, -16, -27,
+		           -36, -18,   0, -19, -15, -15, -21, -38,
+		           -39, -30, -31, -13, -31, -36, -34, -42),
+	chess.KING  :(   4,  54,  47, -99, -99,  60,  83, -62,
+		           -32,  10,  55,  56,  56,  55,  10,   3,
+		           -62,  12, -57,  44, -67,  28,  37, -31,
+		           -55,  50,  11,  -4, -19,  13,   0, -49,
+		           -55, -43, -52, -28, -51, -47,  -8, -50,
+		           -47, -42, -43, -79, -64, -32, -29, -32,
+		            -4,   3, -14, -50, -57, -18,  13,   4,
+		            17,  30,  -3, -14,   6,  -1,  40,  18),
 }
 
 
-SQUARES = np.array([
-	[chess.A1,chess.B1,chess.C1,chess.D1,chess.E1,chess.F1,chess.G1,chess.H1],
-	[chess.A2,chess.B2,chess.C2,chess.D2,chess.E2,chess.F2,chess.G2,chess.H2],
-	[chess.A3,chess.B3,chess.C3,chess.D3,chess.E3,chess.F3,chess.G3,chess.H3],
-	[chess.A4,chess.B4,chess.C4,chess.D4,chess.E4,chess.F4,chess.G4,chess.H4],
-	[chess.A5,chess.B5,chess.C5,chess.D5,chess.E5,chess.F5,chess.G5,chess.H5],
-	[chess.A6,chess.B6,chess.C6,chess.D6,chess.E6,chess.F6,chess.G6,chess.H6],
-	[chess.A7,chess.B7,chess.C7,chess.D7,chess.E7,chess.F7,chess.G7,chess.H7],
-	[chess.A8,chess.B8,chess.C8,chess.D8,chess.E8,chess.F8,chess.G8,chess.H8]
-])
+SQUARES = np.array(
+	[chess.A1,chess.B1,chess.C1,chess.D1,chess.E1,chess.F1,chess.G1,chess.H1,
+	 chess.A2,chess.B2,chess.C2,chess.D2,chess.E2,chess.F2,chess.G2,chess.H2, 
+	 chess.A3,chess.B3,chess.C3,chess.D3,chess.E3,chess.F3,chess.G3,chess.H3, 
+	 chess.A4,chess.B4,chess.C4,chess.D4,chess.E4,chess.F4,chess.G4,chess.H4,
+	 chess.A5,chess.B5,chess.C5,chess.D5,chess.E5,chess.F5,chess.G5,chess.H5,
+	 chess.A6,chess.B6,chess.C6,chess.D6,chess.E6,chess.F6,chess.G6,chess.H6,
+	 chess.A7,chess.B7,chess.C7,chess.D7,chess.E7,chess.F7,chess.G7,chess.H7,
+	 chess.A8,chess.B8,chess.C8,chess.D8,chess.E8,chess.F8,chess.G8,chess.H8]
+)
 class TTEntry:
 	EXACT = 0
 	ALPHA = 1
@@ -200,13 +186,9 @@ class MoveTree:
 		self.OpeningBook = chess.polyglot.open_reader("../env/Lib/site-packages/chess/data/polyglot/performance.bin")
 		self.Killers = []
 		self.Countermoves = np.zeros((64,64), dtype=np.dtype(chess.Move))
+		self.zorbistHasherObj = chess.polyglot.ZobristHasher(chess.polyglot.POLYGLOT_RANDOM_ARRAY)
 
-		'''
-		with chess.polyglot.open_reader("./env/Lib/site-packages/chess/data/polyglot/performance.bin") as reader:
-		    for i in range(len(reader)):
-		        self.OpeningBookCreator.addEntry(reader[i])
-		'''
-
+		#For debugging perposes
 		self.tableALPHA = 0
 		self.tableBETA = 0
 		self.tableEXACT = 0
@@ -245,39 +227,33 @@ class MoveTree:
 
 
 	def evaluateBoardScore(self, board):
+		if board.result() != "*":
+			if (board.result()  == "0-1" and self.engineColor == chess.WHITE) or (board.result()  == "0-1" and self.engineColor == chess.BLACK):
+				return 10**7
+			elif (board.result()  == "1-0" and self.engineColor == chess.BLACK) or (board.result()  == "1-0" and self.engineColor == chess.WHITE):
+				return -10**7
+			elif board.result()  == "1/2-1/2":
+				return 0
 		whiteScore = 0
 		blackScore = 0
-		for i in range(8):
-			for j in range(8):
-				self.timeForLibrary -= time.perf_counter()
-				piece = self.board.piece_at(SQUARES[i][j])
-				self.timeForLibrary += time.perf_counter()
-				if piece and piece.color == chess.WHITE:
-					whiteScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][7-i][7-j]
-				elif piece:
-					blackScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][i][j]
+		for i in range(64):
+			piece = self.board.piece_at(SQUARES[i])
+			if piece and piece.color == chess.WHITE:
+				whiteScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][i]
+			elif piece:
+				blackScore += PIECE_VALUES[piece.piece_type] + SQUARE_VALUES[piece.piece_type][64-i]
 		return(blackScore - whiteScore) 
-		'''
-		if self.engineColor == chess.BLACK:
-			return(blackScore - whiteScore)
-		else:
-			return(whiteScore - blackScore) 
-		'''
 	
 	def findBestMove(self):
-		#self.timeForLibrary -= time.perf_counter()
 		init_moves = self.board.legal_moves
-		#self.timeForLibrary += time.perf_counter()
 		bestMove = None
 		self.Killers = []
-		for i in range(self.MAX_SEARCH_DEPTH,self.MAX_SEARCH_DEPTH+1):
+		for i in range(2,self.MAX_SEARCH_DEPTH+1):
 			alpha = -np.inf
 			beta = np.inf
-			self.alphaBetaPrune(i, alpha, beta, True, self.engineColor, 0)
-			entry = self.tableLookup()
-			if entry:
-				bestMove = entry.move
-		print(entry.value)
+			currVal, currMove = self.alphaBetaPrune(i, alpha, beta, True, self.engineColor, 0)
+			if currMove:
+				bestMove = currMove
 		return bestMove
 
 	def takeTurn(self, move):
@@ -316,26 +292,16 @@ class MoveTree:
 				self.takeTurn(engineMove)
 				self.turnColor = not self.turnColor
 			print("\n\n")
-	def openingBookLookup(self):
-		self.timeForLibrary -= time.perf_counter()
-		hashVal = chess.polyglot.zobrist_hash(self.board)
-		self.timeForLibrary += time.perf_counter()
-		return self.OpeningBook.get(hashVal)
-
 
 	def tableLookup(self):
-		self.timeForLibrary -= time.perf_counter()
-		hashVal = chess.polyglot.zobrist_hash(self.board)
-		self.timeForLibrary += time.perf_counter()
+		hashVal = chess.polyglot.zobrist_hash(self.board, _hasher = self.zorbistHasherObj)
 		if self.table.isEntry(hashVal):
 			return self.table.getEntry(hashVal)
 		else:
 			return None
 
 	def addCurrentStateToTable(self, move, depth, value, flag):
-		self.timeForLibrary -= time.perf_counter()
-		hashVal = chess.polyglot.zobrist_hash(self.board)
-		self.timeForLibrary += time.perf_counter()
+		hashVal = chess.polyglot.zobrist_hash(self.board, _hasher =self.zorbistHasherObj)
 		entry = TTEntry(hashVal, move, depth, value, flag)
 		self.table.addEntry(hashVal, entry)
 		return
@@ -359,8 +325,6 @@ class MoveTree:
 			return True
 		else:
 			return False
-
-
 
 	def addToKillers(self, move, distance):
 		while len(self.Killers) <= distance:
@@ -395,11 +359,9 @@ class MoveTree:
 					self.killersFound += 1
 			
 			if self.isMoveCapture(move):
-				#self.timeForLibrary -= time.perf_counter()
 				ordering[-1] += PIECE_VALUES[self.board.piece_at(move.to_square).piece_type]/100
-				#self.timeForLibrary += time.perf_counter()
 			if self.Countermoves[move.from_square][move.to_square] == move:
-				ordering[-1] += 0
+				ordering[-1] += 1
 
 
 		return [x for _,x in sorted(zip(ordering, moveArray), key= lambda x: x[0], reverse = True)]
@@ -416,7 +378,6 @@ class MoveTree:
 
 
 		tableEntry = self.tableLookup()
-		openingBookEntry = self.openingBookLookup()
 		if tableEntry and tableEntry.move:
 			potentialMoves = self.sortMoves(self.board.legal_moves, depth, distance, tableEntry.move)
 		else:
@@ -425,7 +386,7 @@ class MoveTree:
 		if not potentialMoves or depth == 0:
 			boardScore = self.evaluateBoardScore(self.board)
 			self.addCurrentStateToTable(None, depth, boardScore, TTEntry.EXACT)
-			return boardScore
+			return (boardScore, None)
 
 		if isEngineMove:
 			bestValue = None
@@ -433,7 +394,7 @@ class MoveTree:
 			if tableEntry and tableEntry.depth >= depth:
 				if tableEntry.flag == TTEntry.EXACT:
 					self.tableEXACT += 1
-					return tableEntry.value
+					return (tableEntry.value,tableEntry.move)
 				elif tableEntry.flag == TTEntry.ALPHA and alpha < tableEntry.value:
 					self.tableALPHA += 1
 					alpha = tableEntry.value
@@ -444,21 +405,12 @@ class MoveTree:
 					self.averageTransitionTablePrune = (((self.transitionTablePruning-1) * self.averageTransitionTablePrune) + depth) / self.transitionTablePruning
 					if tableEntry.move:
 						self.addToKillers(tableEntry.move, distance)
-					return alpha
-			
-			if openingBookEntry:
-				self.openingBookHits += 1
-				#potentialMoves = self.putMoveAtFront(potentialMoves, openingBookEntry.move)
-
+					return (alpha, tableEntry.move)
 
 			for move in potentialMoves:
-				#self.timeForLibrary -= time.perf_counter()
 				self.board.push(move)
-				#self.timeForLibrary += time.perf_counter()
-				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)
-				#self.timeForLibrary -= time.perf_counter()
+				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)[0]
 				self.board.pop()
-				#self.timeForLibrary += time.perf_counter()
 				if not bestValue or currBoardValue > bestValue:
 					bestValue = currBoardValue
 					bestMove = move
@@ -469,16 +421,17 @@ class MoveTree:
 					self.totalNodesPruned += 1
 					self.averageDepthPruned = ((self.averageDepthPruned*(self.totalNodesPruned-1)) + depth) / self.totalNodesPruned
 					self.addToKillers(move, distance+1)
-					return bestValue
+					return (bestValue, bestMove)
 			self.addCurrentStateToTable(bestMove, depth, bestValue, TTEntry.EXACT)
-			return bestValue
+			return (bestValue, bestMove)
+		
 		else:
 			bestValue = None
 			bestMove = None
 			if tableEntry and tableEntry.depth >= depth:
 				if tableEntry.flag == TTEntry.EXACT:
 					self.tableEXACT += 1
-					return tableEntry.value
+					return (tableEntry.value,tableEntry.move)
 				elif tableEntry.flag == TTEntry.ALPHA and alpha < tableEntry.value:
 					alpha = tableEntry.value
 				elif tableEntry.flag == TTEntry.BETA and beta > tableEntry.value:
@@ -490,21 +443,12 @@ class MoveTree:
 					self.averageTransitionTablePrune = (((self.transitionTablePruning-1) * self.averageTransitionTablePrune) + depth) / self.transitionTablePruning
 					if tableEntry.move:
 						self.addToKillers(tableEntry.move, distance)
-					return beta
-
-			if openingBookEntry:
-				self.openingBookHits += 1
-				#potentialMoves = self.putMoveAtFront(potentialMoves, openingBookEntry.move)
-
+					return (beta, tableEntry.move)
 
 			for move in potentialMoves:
-				#self.timeForLibrary -= time.perf_counter()
 				self.board.push(move) 
-				#self.timeForLibrary += time.perf_counter()  
-				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)
-				#self.timeForLibrary -= time.perf_counter()
+				currBoardValue = self.alphaBetaPrune(depth-1, alpha, beta, not isEngineMove, engineIsWhite, distance + 1)[0]
 				self.board.pop()
-				#self.timeForLibrary += time.perf_counter()
 				if not bestValue or currBoardValue < bestValue:
 					bestValue = currBoardValue
 					bestMove = move
@@ -515,13 +459,14 @@ class MoveTree:
 					self.totalNodesPruned += 1
 					self.averageDepthPruned = ((self.averageDepthPruned*(self.totalNodesPruned-1)) + depth) / self.totalNodesPruned
 					self.addToKillers(move, distance+1)
-					return bestValue
+					return (bestValue, bestMove)
 
 			self.addCurrentStateToTable(bestMove, depth, bestValue, TTEntry.EXACT)
-			return bestValue
+			return (bestValue, bestMove)
 
 
 
-
+ai = MoveTree()
+ai.play()
 
 
