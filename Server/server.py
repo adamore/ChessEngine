@@ -13,6 +13,7 @@ import Smiley
 
 
 app = Flask(__name__)
+cors = CORS(app)
 api = Api(app)
 
 
