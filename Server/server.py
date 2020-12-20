@@ -3,6 +3,7 @@ from flask_restful import Api
 from GameManager import GameManager, GameCreator
 
 from flask_restful import Resource, reqparse
+from flask_cors import CORS, cross_origin
 from flask import abort
 from random import seed
 from random import randint
