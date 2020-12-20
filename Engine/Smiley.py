@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '../chess')
+
 import chess
 import numpy as np 
 from pptree import *
