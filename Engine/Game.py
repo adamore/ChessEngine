@@ -4,7 +4,7 @@ import chess
 class Game:
 	def __init__(self):
 		self.Engine = Smiley.MoveTree()
-		self.board = Board()
+		self.board = chess.Board()
 		self.USER_COLOR = chess.WHITE
 		self.ENGINE_COLOR = chess.BLACK
 

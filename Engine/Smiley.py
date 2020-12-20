@@ -190,7 +190,7 @@ class TranspositionTable:
 class MoveTree:
 	def __init__(self):
 		self.board = chess.Board()
-		self.MAX_SEARCH_DEPTH = 6
+		self.MAX_SEARCH_DEPTH = 3
 		self.engineColor = chess.BLACK
 		self.table = TranspositionTable()
 		self.OpeningBookCreator = OpeningBookCreator.OpeningBookCreator("../env/Lib/site-packages/chess/data/polyglot/SmileyInitOpen.bin")
@@ -516,11 +516,6 @@ class MoveTree:
 
 			self.addCurrentStateToTable(bestMove, depth, bestValue, TTEntry.EXACT)
 			return bestValue
-
-
-ai = MoveTree()
-ai.play()
-
 
 
 
