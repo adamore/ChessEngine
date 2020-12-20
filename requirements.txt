@@ -11,3 +11,4 @@ pptree==3.1
 pytz==2020.4
 six==1.15.0
 Werkzeug==1.0.1
+uwsgi
