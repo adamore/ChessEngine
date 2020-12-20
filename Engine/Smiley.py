@@ -466,7 +466,4 @@ class MoveTree:
 
 
 
-ai = MoveTree()
-ai.play()
-
 
