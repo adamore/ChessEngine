@@ -1,4 +1,5 @@
-from flask_restful import Resource, reqparse, Abort
+from flask_restful import Resource, reqparse
+from flask.ext.restful import abort
 from random import seed
 from random import randint
 import sys
