@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300|Montserrat:800" rel="stylesheet">
+        <meta charset="utf-8">
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+        <meta name="apple-mobile-web-app-title" content="Chess AI">
+        <meta name="application-name" content="Chess AI">
+        <meta name="theme-color" content="#000000">
+        <meta name="author" content="Chess AI">
+        <link rel="canonical" href="https://anthonydamore.com">
+        <link rel="shortcut icon" href="img/chesspieces/wN.png" />
+        <link rel="apple-touch-icon" href="img/chesspieces/wN.png" sizes="180x180">
+        <link rel="icon" type="image/png" href="img/chesspieces/wN.png" sizes="32x32">
+        <link rel="icon" type="image/png" href="img/chesspieces/wN.png" sizes="16x16">
+        <meta property="og:image" content="img/chesspieces/wN.png">
+        <link rel="mask-icon" href="img/chesspieces/wN.png" color="#000000">
+        <title>Chess AI</title>
+        <link rel="stylesheet" type="text/css" href="chessboard/css/chessboard.css" />
+        <link rel="stylesheet" type="text/css" href="main.css" />
+    </head>
+
+    <body>
+        <center>
+            <h2>
+                <div class="lds-circle" id="computerloading">
+                    <div></div>
+                </div>
+                Computer
+                <div class="lds-circle">
+                    <div></div>
+                </div>
+            </h2>
+            <div id="board"></div>
+            <h2>You</h2>
+            <div id="status" class="status">White to move</div>
+            <label class="fen">FEN:</label>
+            <div id="fen" class="fen"></div>
+            <label class="pgn">PGN:</label>
+            <div id="pgn" class="pgn"></div>
+        </center>
+        <script type="text/javascript" src="jquery.js"></script>
+        <script type="text/javascript" src="chess-lib.js"></script>
+        <script type="text/javascript" src="chessboard/js/chessboard.js"></script>
+        <script type="text/javascript" src="chess.js"></script>
+    </body>
+
+</html>
