@@ -120,7 +120,7 @@ class TTEntry:
 
 class TranspositionTable:
 	def __init__(self):
-		self.SIZE = 10**8
+		self.SIZE = 10**6
 		self.table = np.empty(self.SIZE, dtype= np.dtype(TTEntry))
 
 		#TableStats
