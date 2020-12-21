@@ -151,7 +151,7 @@ class TranspositionTable:
 class MoveTree:
     def __init__(self):
         self.board = chess.Board()
-        self.MAX_SEARCH_DEPTH = 4
+        self.MAX_SEARCH_DEPTH = 3
         self.engineColor = chess.BLACK
         self.table = TranspositionTable()
         self.OpeningBookCreator = OpeningBookCreator.OpeningBookCreator(
