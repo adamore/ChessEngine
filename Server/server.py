@@ -9,17 +9,11 @@ from random import seed
 from random import randint
 import sys
 sys.path.insert(0, '../Engine/')
-import Smiley
-
-
+import Engine
 
 app = Flask(__name__)
 cors = CORS(app)
 api = Api(app)
-
-
-
-
 
 class Homepage(Resource):
 	def get(self):
