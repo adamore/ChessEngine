@@ -1,12 +1,12 @@
 import sys
 sys.path.insert(0, '../chess')
 
-import Smiley
+import Engine
 import chess
 
 class Game:
 	def __init__(self):
-		self.Engine = Smiley.MoveTree()
+		self.Engine = Engine.MoveTree()
 		self.board = chess.Board()
 		self.USER_COLOR = chess.WHITE
 		self.ENGINE_COLOR = chess.BLACK
