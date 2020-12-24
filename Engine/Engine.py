@@ -110,22 +110,18 @@ class TranspositionTable:
         self.totalTableTime = 0
 
     def getEntry(self, hashVal):
-        startTime = time.perf_counter()
         self.totalLookups += 1
         hashMod = hashVal % self.SIZE
         if self.table[hashMod]:
             entry = self.table[hashMod]
             entry.ancient = False
             self.lookupMatches += 1
-            self.totalTableTime += time.perf_counter() - startTime
             return entry
         else:
             self.lookupMisses += 1
-            self.totalTableTime += time.perf_counter() - startTime
             return None
 
     def addEntry(self, hashVal, entry):
-        startTime = time.perf_counter()
         hashMod = hashVal % self.SIZE
         if self.table[hashMod]:
             if self.table[hashMod].hash != hashVal:
@@ -133,20 +129,16 @@ class TranspositionTable:
         else:
             self.entries += 1
         self.table[hashMod] = entry
-        self.totalTableTime += time.perf_counter() - startTime
 
     def isEntry(self, hashVal):
         self.totalLookups += 1
-        startTime = time.perf_counter()
         hashMod = hashVal % self.SIZE
         entry = self.table[hashMod]
         if entry and entry.hash == hashVal:
             self.lookupMatches += 1
-            self.totalTableTime += time.perf_counter() - startTime
             return True
         else:
             self.lookupMisses += 1
-            self.totalTableTime += time.perf_counter() - startTime
             return False
 
 
@@ -202,8 +194,8 @@ class MoveTree:
             self.tableBETA, self.movesReordered, self.totalNodesPruned,
             self.averageDepthPruned, self.openingBookHits, self.killersFound,
             totalTime, self.timeForLibrary)
-        tableStatString = self.table.getTableStatString()
-        print(tableStatString + treeStatString)
+        #tableStatString = self.table.getTableStatString()
+        print(treeStatString)
 
     def evaluateBoardScore(self, board):
         if board.result() != "*":
@@ -290,20 +282,12 @@ class MoveTree:
             print("\n\n")
 
     def tableLookup(self, hashVal):
-        '''
-        hashVal = chess.polyglot.zobrist_hash(self.board,
-                                              _hasher=self.zorbistHasherObj)
-        '''
         if self.table.isEntry(hashVal):
             return self.table.getEntry(hashVal)
         else:
             return None
 
     def addCurrentStateToTable(self, move, depth, value, flag, hashVal):
-        '''
-        hashVal = chess.polyglot.zobrist_hash(self.board,
-                                              _hasher=self.zorbistHasherObj)
-        '''
         entry = TTEntry(hashVal, move, depth, value, flag)
         self.table.addEntry(hashVal, entry)
         return
@@ -488,26 +472,13 @@ class MoveTree:
                 if time.time() - searchStartTime > 2:
                     return (None, None)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
-                self.board.push(move)
-                '''
-                actualStateHash = chess.polyglot.zobrist_hash(self.board,
-                                              _hasher=self.zorbistHasherObj)
-                if newHash == actualStateHash:
-                    #print("Black")
-                    #print("Yes")
-                    dummy = 0
-                else:
-                    print("Black")
-                    print(self.board)
-                    print("Calculated Hash: " + str(bin(newHash)) + "\n" + 
-                         "Actual Hash:      " + str(bin(actualStateHash)) + "\n" + 
-                         "Old Hash:         " + str(bin(oldHash))) 
-                '''               
+                self.board.push(move)              
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
                                                      not isEngineMove,
                                                      engineIsWhite,
                                                      distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
+                '''
                 if move.uci() == "h8g8" or move.uci() == "a8b8":
                     print("----")
                     print("White") if self.board.turn else print("Black")
@@ -519,6 +490,7 @@ class MoveTree:
                     if bestValue and currBoardValue and  currBoardValue > bestValue:
                         print(self.board)
                     print("----")
+                '''
                 if not currBoardValue:
                     continue
                 if currBoardValue > alpha:
@@ -557,7 +529,6 @@ class MoveTree:
                 elif tableEntry.flag == TTEntry.BETA and beta > tableEntry.value:
                     self.tableBETA += 1
                     beta = tableEntry.value
-
                 if beta <= alpha:
                     self.transitionTablePruning += 1
                     self.averageTransitionTablePrune = (
@@ -573,18 +544,6 @@ class MoveTree:
                     return (None, None)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)
-                '''
-                actualStateHash = chess.polyglot.zobrist_hash(self.board,
-                                              _hasher=self.zorbistHasherObj)
-                if newHash == actualStateHash:
-                    dummy = 0
-                else:
-                    print("White")
-                    print(self.board)
-                    print("Calculated Hash: " + str(bin(newHash)) + "\n" + 
-                          "Actual Hash:     " + str(bin(actualStateHash)) + "\n" + 
-                          "Old Hash:        " + str(bin(oldHash)))
-                '''
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
                                                      not isEngineMove,
                                                      engineIsWhite,
