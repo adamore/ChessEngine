@@ -469,8 +469,8 @@ class MoveTree:
 
             for move in potentialMoves:
                 #Stop search if to much time passed
-                if time.time() - searchStartTime > 2:
-                    return (None, None)
+                #if time.time() - searchStartTime > 2:
+                #    return (None, None)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)              
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
@@ -478,18 +478,6 @@ class MoveTree:
                                                      engineIsWhite,
                                                      distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
-                '''
-                if move.uci() == "h8g8" or move.uci() == "a8b8":
-                    print("----")
-                    print("White") if self.board.turn else print("Black")
-                    print("Alpha: "+ str(alpha))
-                    print("Beta: "+str(beta))
-                    print("Value: "+str(currBoardValue))
-                    print("Best Value: " + str(bestValue))
-                    print("Depth: "+str(depth))
-                    if bestValue and currBoardValue and  currBoardValue > bestValue:
-                        print(self.board)
-                    print("----")
                 '''
                 if not currBoardValue:
                     continue
@@ -503,7 +491,7 @@ class MoveTree:
                     bestMove = move
                 if bestValue > alpha:
                     alpha = bestValue
-                '''
+                
                 if beta <= alpha:
                     self.addCurrentStateToTable(bestMove, depth, bestValue,
                                                 TTEntry.ALPHA, newHash)
@@ -540,8 +528,8 @@ class MoveTree:
                     return (beta, tableEntry.move)
 
             for move in potentialMoves:
-                if time.time() - searchStartTime > 2:
-                    return (None, None)
+                #if time.time() - searchStartTime > 2:
+                #    return (None, None)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
@@ -549,6 +537,7 @@ class MoveTree:
                                                      engineIsWhite,
                                                      distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
+                '''
                 if not currBoardValue:
                     continue
                 if beta > currBoardValue:
@@ -561,7 +550,6 @@ class MoveTree:
                     bestMove = move
                 if bestValue < beta:
                     beta = bestValue
-                '''
                 if beta <= alpha:
                     self.addCurrentStateToTable(bestMove, depth, bestValue,
                                                 TTEntry.BETA, newHash)
@@ -575,3 +563,5 @@ class MoveTree:
             self.addCurrentStateToTable(bestMove, depth, bestValue,
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
+ai = MoveTree()
+ai.play()
