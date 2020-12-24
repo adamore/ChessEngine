@@ -9,7 +9,9 @@ import pdb
 import time
 import OpeningBookCreator
 import random
+import typing
 
+#Using Piece values and square values from Sunfish Engine
 PIECE_VALUES = {
     0: 0,
     chess.PAWN: 100,
@@ -151,7 +153,7 @@ class TranspositionTable:
 class MoveTree:
     def __init__(self):
         self.board = chess.Board()
-        self.MAX_SEARCH_DEPTH = 3
+        self.MAX_SEARCH_DEPTH = 1000
         self.engineColor = chess.BLACK
         self.table = TranspositionTable()
         self.OpeningBookCreator = OpeningBookCreator.OpeningBookCreator(
@@ -160,8 +162,9 @@ class MoveTree:
             "../env/Lib/site-packages/chess/data/polyglot/performance.bin")
         self.Killers = []
         self.Countermoves = np.zeros((64, 64), dtype=np.dtype(chess.Move))
+        self.RANDOM_HASH_ARRAY = chess.polyglot.POLYGLOT_RANDOM_ARRAY
         self.zorbistHasherObj = chess.polyglot.ZobristHasher(
-            chess.polyglot.POLYGLOT_RANDOM_ARRAY)
+            self.RANDOM_HASH_ARRAY)
         #For debugging perposes
         self.tableALPHA = 0
         self.tableBETA = 0
@@ -230,13 +233,23 @@ class MoveTree:
         init_moves = self.board.legal_moves
         bestMove = None
         self.Killers = []
-        for i in range(2, self.MAX_SEARCH_DEPTH + 1):
+        boardHash = chess.polyglot.zobrist_hash(self.board,
+                                              _hasher=self.zorbistHasherObj)
+        start = time.time()
+        for i in range(1, self.MAX_SEARCH_DEPTH + 1):
             alpha = -np.inf
             beta = np.inf
             currVal, currMove = self.alphaBetaPrune(i, alpha, beta, True,
-                                                    self.engineColor, 0)
+                                                    self.engineColor, 0, boardHash, start)
             if currMove:
                 bestMove = currMove
+            if time.time() - start > 1:
+                print(i)
+                print(time.time() - start)
+                break
+        if not bestMove:
+            print("Could not find move")
+            return init_moves[0]
         return bestMove
 
     def takeTurn(self, move):
@@ -276,17 +289,21 @@ class MoveTree:
                 self.turnColor = not self.turnColor
             print("\n\n")
 
-    def tableLookup(self):
+    def tableLookup(self, hashVal):
+        '''
         hashVal = chess.polyglot.zobrist_hash(self.board,
                                               _hasher=self.zorbistHasherObj)
+        '''
         if self.table.isEntry(hashVal):
             return self.table.getEntry(hashVal)
         else:
             return None
 
-    def addCurrentStateToTable(self, move, depth, value, flag):
+    def addCurrentStateToTable(self, move, depth, value, flag, hashVal):
+        '''
         hashVal = chess.polyglot.zobrist_hash(self.board,
                                               _hasher=self.zorbistHasherObj)
+        '''
         entry = TTEntry(hashVal, move, depth, value, flag)
         self.table.addEntry(hashVal, entry)
         return
@@ -350,11 +367,88 @@ class MoveTree:
                 zip(ordering, moveArray), key=lambda x: x[0], reverse=True)
         ]
 
-    def alphaBetaPrune(self, depth, alpha, beta, isEngineMove, engineIsWhite,
-                       distance):
-        self.totalNodesSearched += 1
+    def calculateNewZorbistHash(self, oldHash, move):
+        #First check metadata for current castling rights and current en_passant
+        currentCastlingRights = self.zorbistHasherObj.hash_castling(self.board) 
+        currentEnPassantRights = self.zorbistHasherObj.hash_ep_square(self.board)
+        #Four values to be determined
+            #Original source hash
+            #Original destination hash
+            #Updated destination hash
+        sourceHash = 0
+        destinationHash = 0
+        updatedDestinationHash = 0
+        #Move has source location and destination location
+        source = move.from_square
+        destination = move.to_square
+        sourcePiece = self.board.piece_at(source)
+        destinationPiece = self.board.piece_at(destination)
+        if sourcePiece:
+            sourcePieceIndex = (sourcePiece.piece_type - 1) * 2
+            sourcePieceIndex += 1 if sourcePiece.color else 0
+            sourceHash = self.RANDOM_HASH_ARRAY[64*sourcePieceIndex + source]
+            if move.promotion:
+                promotedPieceType = move.promotion
+                promotionIndex = (promotedPieceType-1)*2
+                promotionIndex += 1 if sourcePiece.color else 0
+                updatedDestinationHash = self.RANDOM_HASH_ARRAY[64*promotionIndex + destination]
+            else:
+                updatedDestinationHash = self.RANDOM_HASH_ARRAY[64*sourcePieceIndex + destination]
+        #Must check if move is castling
+        if self.board.is_castling(move):
+            rookIndex = 7 if sourcePiece.color else 6
+            if self.board.is_kingside_castling(move):
+                if sourcePiece.color:
+                    destinationHash ^= (self.RANDOM_HASH_ARRAY[64*rookIndex + chess.H1]
+                                        ^ self.RANDOM_HASH_ARRAY[64*rookIndex + chess.F1])
+                else:
+                    destinationHash ^= (self.RANDOM_HASH_ARRAY[64*rookIndex + chess.H8]
+                                        ^ self.RANDOM_HASH_ARRAY[64*rookIndex + chess.F8])
+            elif self.board.is_queenside_castling(move):
+                if sourcePiece.color:
+                    destinationHash ^= (self.RANDOM_HASH_ARRAY[64*rookIndex + chess.A1]
+                                        ^ self.RANDOM_HASH_ARRAY[64*rookIndex + chess.D1])
+                else:
+                    destinationHash ^=  (self.RANDOM_HASH_ARRAY[64*rookIndex + chess.A8]
+                                        ^ self.RANDOM_HASH_ARRAY[64*rookIndex + chess.D8])
+        else:    
+            #If not castling simply use this to remove the piece bit string from hash
+            if destinationPiece:
+                destinationPieceIndex = (destinationPiece.piece_type - 1)*2
+                destinationPieceIndex += 1 if destinationPiece.color else 0
+                destinationHash = self.RANDOM_HASH_ARRAY[64*destinationPieceIndex + destination]
+        aug = sourceHash ^ updatedDestinationHash ^ destinationHash ^  self.zorbistHasherObj.hash_turn(self.board)
+        self.board.push(move)
+        if currentCastlingRights != self.zorbistHasherObj.hash_castling(self.board) and currentEnPassantRights != self.zorbistHasherObj.hash_ep_square(self.board):
+            hashWithoutOtherData = (  oldHash 
+                                    ^ aug 
+                                    ^ self.zorbistHasherObj.hash_turn(self.board) 
+                                    ^ currentCastlingRights 
+                                    ^ self.zorbistHasherObj.hash_castling(self.board)
+                                    ^ currentEnPassantRights
+                                    ^ self.zorbistHasherObj.hash_ep_square(self.board))
+        elif currentCastlingRights != self.zorbistHasherObj.hash_castling(self.board):
+            hashWithoutOtherData = (  oldHash 
+                                    ^ aug 
+                                    ^ self.zorbistHasherObj.hash_turn(self.board) 
+                                    ^ currentCastlingRights 
+                                    ^ self.zorbistHasherObj.hash_castling(self.board))
+        elif currentEnPassantRights != self.zorbistHasherObj.hash_ep_square(self.board):
+            hashWithoutOtherData = (  oldHash 
+                                    ^ aug 
+                                    ^ self.zorbistHasherObj.hash_turn(self.board) 
+                                    ^ currentEnPassantRights
+                                    ^ self.zorbistHasherObj.hash_ep_square(self.board))
+        else:
+            hashWithoutOtherData = oldHash ^ aug ^ self.zorbistHasherObj.hash_turn(self.board)
+        self.board.pop()
+        return hashWithoutOtherData
 
-        tableEntry = self.tableLookup()
+
+    def alphaBetaPrune(self, depth, alpha, beta, isEngineMove, engineIsWhite,
+                       distance, oldHash, searchStartTime):
+        self.totalNodesSearched += 1
+        tableEntry = self.tableLookup(oldHash)
         if tableEntry and tableEntry.move:
             potentialMoves = self.sortMoves(self.board.legal_moves, depth,
                                             distance, tableEntry.move)
@@ -364,7 +458,7 @@ class MoveTree:
 
         if not potentialMoves or depth == 0:
             boardScore = self.evaluateBoardScore(self.board)
-            self.addCurrentStateToTable(None, depth, boardScore, TTEntry.EXACT)
+            self.addCurrentStateToTable(None, depth, boardScore, TTEntry.EXACT, oldHash)
             return (boardScore, None)
 
         if isEngineMove:
@@ -390,20 +484,57 @@ class MoveTree:
                     return (alpha, tableEntry.move)
 
             for move in potentialMoves:
+                #Stop search if to much time passed
+                if time.time() - searchStartTime > 2:
+                    return (None, None)
+                newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)
+                '''
+                actualStateHash = chess.polyglot.zobrist_hash(self.board,
+                                              _hasher=self.zorbistHasherObj)
+                if newHash == actualStateHash:
+                    #print("Black")
+                    #print("Yes")
+                    dummy = 0
+                else:
+                    print("Black")
+                    print(self.board)
+                    print("Calculated Hash: " + str(bin(newHash)) + "\n" + 
+                         "Actual Hash:      " + str(bin(actualStateHash)) + "\n" + 
+                         "Old Hash:         " + str(bin(oldHash))) 
+                '''               
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
                                                      not isEngineMove,
                                                      engineIsWhite,
-                                                     distance + 1)[0]
+                                                     distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
+                if move.uci() == "h8g8" or move.uci() == "a8b8":
+                    print("----")
+                    print("White") if self.board.turn else print("Black")
+                    print("Alpha: "+ str(alpha))
+                    print("Beta: "+str(beta))
+                    print("Value: "+str(currBoardValue))
+                    print("Best Value: " + str(bestValue))
+                    print("Depth: "+str(depth))
+                    if bestValue and currBoardValue and  currBoardValue > bestValue:
+                        print(self.board)
+                    print("----")
+                if not currBoardValue:
+                    continue
+                if currBoardValue > alpha:
+                    alpha = currBoardValue
+                    bestValue = currBoardValue
+                    bestMove = move
+                '''    
                 if not bestValue or currBoardValue > bestValue:
                     bestValue = currBoardValue
                     bestMove = move
                 if bestValue > alpha:
                     alpha = bestValue
+                '''
                 if beta <= alpha:
                     self.addCurrentStateToTable(bestMove, depth, bestValue,
-                                                TTEntry.ALPHA)
+                                                TTEntry.ALPHA, newHash)
                     self.totalNodesPruned += 1
                     self.averageDepthPruned = ((self.averageDepthPruned *
                                                 (self.totalNodesPruned - 1)) +
@@ -411,7 +542,7 @@ class MoveTree:
                     self.addToKillers(move, distance + 1)
                     return (bestValue, bestMove)
             self.addCurrentStateToTable(bestMove, depth, bestValue,
-                                        TTEntry.EXACT)
+                                        TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
 
         else:
@@ -438,20 +569,43 @@ class MoveTree:
                     return (beta, tableEntry.move)
 
             for move in potentialMoves:
+                if time.time() - searchStartTime > 2:
+                    return (None, None)
+                newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)
+                '''
+                actualStateHash = chess.polyglot.zobrist_hash(self.board,
+                                              _hasher=self.zorbistHasherObj)
+                if newHash == actualStateHash:
+                    dummy = 0
+                else:
+                    print("White")
+                    print(self.board)
+                    print("Calculated Hash: " + str(bin(newHash)) + "\n" + 
+                          "Actual Hash:     " + str(bin(actualStateHash)) + "\n" + 
+                          "Old Hash:        " + str(bin(oldHash)))
+                '''
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
                                                      not isEngineMove,
                                                      engineIsWhite,
-                                                     distance + 1)[0]
+                                                     distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
+                if not currBoardValue:
+                    continue
+                if beta > currBoardValue:
+                    beta = currBoardValue
+                    bestMove = move
+                    bestValue = currBoardValue
+                '''
                 if not bestValue or currBoardValue < bestValue:
                     bestValue = currBoardValue
                     bestMove = move
                 if bestValue < beta:
                     beta = bestValue
+                '''
                 if beta <= alpha:
                     self.addCurrentStateToTable(bestMove, depth, bestValue,
-                                                TTEntry.BETA)
+                                                TTEntry.BETA, newHash)
                     self.totalNodesPruned += 1
                     self.averageDepthPruned = ((self.averageDepthPruned *
                                                 (self.totalNodesPruned - 1)) +
@@ -460,5 +614,7 @@ class MoveTree:
                     return (bestValue, bestMove)
 
             self.addCurrentStateToTable(bestMove, depth, bestValue,
-                                        TTEntry.EXACT)
+                                        TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
+ai = MoveTree()
+ai.play()
