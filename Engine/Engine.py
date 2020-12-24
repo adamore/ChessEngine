@@ -563,5 +563,4 @@ class MoveTree:
             self.addCurrentStateToTable(bestMove, depth, bestValue,
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
-ai = MoveTree()
-ai.play()
+    
