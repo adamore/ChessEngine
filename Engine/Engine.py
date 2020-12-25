@@ -1,9 +1,11 @@
+#!/usr/bin/env pypy
+
+
 import sys
 sys.path.insert(0, '../chess')
 
 import chess
 import numpy as np
-from pptree import *
 import chess.polyglot
 import pdb
 import time
@@ -56,7 +58,6 @@ SQUARE_VALUES = {
      -52, -28, -51, -47, -8, -50, -47, -42, -43, -79, -64, -32, -29, -32, -4,
      3, -14, -50, -57, -18, 13, 4, 17, 30, -3, -14, 6, -1, 40, 18),
 }
-
 SQUARES = np.array([
     chess.A1, chess.B1, chess.C1, chess.D1, chess.E1, chess.F1, chess.G1,
     chess.H1, chess.A2, chess.B2, chess.C2, chess.D2, chess.E2, chess.F2,
@@ -69,6 +70,7 @@ SQUARES = np.array([
     chess.A8, chess.B8, chess.C8, chess.D8, chess.E8, chess.F8, chess.G8,
     chess.H8
 ])
+
 
 
 class TTEntry:
@@ -88,6 +90,7 @@ class TTEntry:
 class TranspositionTable:
     def __init__(self):
         self.SIZE = 10**6
+
         self.table = np.empty(self.SIZE, dtype=np.dtype(TTEntry))
         #TableStats
         self.entries = 0
@@ -469,8 +472,8 @@ class MoveTree:
 
             for move in potentialMoves:
                 #Stop search if to much time passed
-                #if time.time() - searchStartTime > 2:
-                #    return (None, None)
+                if time.time() - searchStartTime > 20:
+                    return (bestValue, bestMove)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)              
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
@@ -478,9 +481,10 @@ class MoveTree:
                                                      engineIsWhite,
                                                      distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
-                '''
+                
                 if not currBoardValue:
                     continue
+                '''
                 if currBoardValue > alpha:
                     alpha = currBoardValue
                     bestValue = currBoardValue
@@ -528,8 +532,8 @@ class MoveTree:
                     return (beta, tableEntry.move)
 
             for move in potentialMoves:
-                #if time.time() - searchStartTime > 2:
-                #    return (None, None)
+                if time.time() - searchStartTime > 20:
+                    return (bestValue, bestMove)
                 newHash = self.calculateNewZorbistHash(oldHash, move)
                 self.board.push(move)
                 currBoardValue = self.alphaBetaPrune(depth - 1, alpha, beta,
@@ -537,9 +541,10 @@ class MoveTree:
                                                      engineIsWhite,
                                                      distance + 1, newHash, searchStartTime)[0]
                 self.board.pop()
-                '''
+                
                 if not currBoardValue:
                     continue
+                '''
                 if beta > currBoardValue:
                     beta = currBoardValue
                     bestMove = move
@@ -563,4 +568,3 @@ class MoveTree:
             self.addCurrentStateToTable(bestMove, depth, bestValue,
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
-    
