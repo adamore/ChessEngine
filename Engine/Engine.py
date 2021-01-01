@@ -1,6 +1,3 @@
-#!/usr/bin/env pypy
-
-
 import sys
 sys.path.insert(0, '../chess')
 
@@ -249,7 +246,7 @@ class MoveTree:
         if isinstance(move, str):
             chessMove = chess.Move.from_uci(move)
             pieceMoved = self.board.piece_at(chessMove.from_square)
-            if pieceMoved.piece_type == chess.PAWN: and (pieceMoved.to_square in SQUARES[0:8] or pieceMoved.to_square in SQUARES[56:64]):
+            if pieceMoved.piece_type == chess.PAWN and (pieceMoved.to_square in SQUARES[0:8] or pieceMoved.to_square in SQUARES[56:64]):
                 chessMove.promotion = chess.QUEEN
             if chessMove not in self.board.legal_moves:
                 raise AssertionError
@@ -568,3 +565,4 @@ class MoveTree:
             self.addCurrentStateToTable(bestMove, depth, bestValue,
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
+            
