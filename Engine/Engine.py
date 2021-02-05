@@ -4,6 +4,7 @@ sys.path.insert(0, '../chess')
 import chess
 import numpy as np
 import chess.polyglot
+import chess.syzygy
 import pdb
 import time
 import OpeningBookCreator
@@ -155,6 +156,9 @@ class MoveTree:
         self.RANDOM_HASH_ARRAY = chess.polyglot.POLYGLOT_RANDOM_ARRAY
         self.zorbistHasherObj = chess.polyglot.ZobristHasher(
             self.RANDOM_HASH_ARRAY)
+        self.piecesOnBoard = 16
+        with chess.syzygy.open_tablebase("../env/Lib/site-packages/chess/data/syzygy/regular") as tableBase:
+            self.tableBaseProbing = tableBase
         #For debugging perposes
         self.tableALPHA = 0
         self.tableBETA = 0
@@ -221,6 +225,37 @@ class MoveTree:
 
     def findBestMove(self):
         init_moves = self.board.legal_moves
+        if self.piecesOnBoard <= 6:
+            currPositionWDL = self.tableBaseProbing.get_wdl(self.board)
+            if currPositionWDL > 0:
+                for move in init_moves:
+                    self.board.push(move)
+                    if self.tableBaseProbing.get_wdl(self.board) < 0:
+                        self.board.pop()
+                        return move
+                    else:
+                        self.board.pop()
+                return init_moves[0]
+            elif currPositionWDL == 0:
+                for move in init_moves:
+                    self.board.push(move)
+                    if self.tableBaseProbing.get_wdl(self.board) == 0:
+                        self.board.pop()
+                        return move
+                    else:
+                        self.board.pop()
+                return init_moves[0]
+            else:
+                dtzProbeMin = 100
+                dtzMinMove = None
+                for move in init_moves:
+                    self.board.push(move)
+                    currProbeVal = self.tableBaseProbing.get_dtz(self.board)
+                    if dtzProbeMin > currProbeVal or dtzMinMove == None:
+                        dtzProbeMin = currProbeVal
+                        dtzMinMove = move
+                return dtzMinMove
+
         bestMove = None
         self.Killers = []
         boardHash = chess.polyglot.zobrist_hash(self.board,
@@ -250,9 +285,13 @@ class MoveTree:
                 chessMove.promotion = chess.QUEEN
             if chessMove not in self.board.legal_moves:
                 raise AssertionError
+            if self.board.piece_at(chessMove.to_square) != None:
+                self.piecesOnBoard -= 1
             self.board.push(chessMove)
             return
         elif isinstance(move, chess.Move):
+            if self.board.piece_at(move.to_square) != None:
+                self.piecesOnBoard -= 1
             self.board.push(move)
             return
 
@@ -481,12 +520,6 @@ class MoveTree:
                 
                 if not currBoardValue:
                     continue
-                '''
-                if currBoardValue > alpha:
-                    alpha = currBoardValue
-                    bestValue = currBoardValue
-                    bestMove = move
-                '''    
                 if not bestValue or currBoardValue > bestValue:
                     bestValue = currBoardValue
                     bestMove = move
@@ -541,12 +574,6 @@ class MoveTree:
                 
                 if not currBoardValue:
                     continue
-                '''
-                if beta > currBoardValue:
-                    beta = currBoardValue
-                    bestMove = move
-                    bestValue = currBoardValue
-                '''
                 if not bestValue or currBoardValue < bestValue:
                     bestValue = currBoardValue
                     bestMove = move
@@ -566,3 +593,6 @@ class MoveTree:
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
             
+
+ai = MoveTree()
+ai.play()
