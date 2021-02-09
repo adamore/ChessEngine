@@ -156,7 +156,7 @@ class MoveTree:
         self.RANDOM_HASH_ARRAY = chess.polyglot.POLYGLOT_RANDOM_ARRAY
         self.zorbistHasherObj = chess.polyglot.ZobristHasher(
             self.RANDOM_HASH_ARRAY)
-        self.piecesOnBoard = 16
+        self.piecesOnBoard = 32
         with chess.syzygy.open_tablebase("../env/Lib/site-packages/chess/data/syzygy/regular") as tableBase:
             self.tableBaseProbing = tableBase
         #For debugging perposes
