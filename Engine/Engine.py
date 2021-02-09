@@ -225,10 +225,8 @@ class MoveTree:
 
     def findBestMove(self):
         init_moves = self.board.legal_moves
-        if self.piecesOnBoard <= 6:
-            currPositionWDL = self.tableBaseProbing.get_wdl(self.board)
-            if currPositionWDL == None:
-                continue
+        if self.piecesOnBoard <= 6 and currPositionWDL = self.tableBaseProbing.get_wdl(self.board):
+            #currPositionWDL = self.tableBaseProbing.get_wdl(self.board)
             elif currPositionWDL > 0:
                 for move in init_moves:
                     self.board.push(move)
