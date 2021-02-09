@@ -593,6 +593,3 @@ class MoveTree:
                                         TTEntry.EXACT, oldHash)
             return (bestValue, bestMove)
             
-
-ai = MoveTree()
-ai.play()
